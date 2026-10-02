@@ -1,0 +1,24 @@
+<?xml version="1.0" ?>
+<robot name="URDF" xmlns:xacro="http://www.ros.org/wiki/xacro" >
+
+<material name="silver">
+  <color rgba="0.700 0.700 0.700 1.000"/>
+</material>
+
+<material name="aluminium">
+  <color rgba="0.800 0.820 0.850 1.000"/>
+</material>
+
+<material name="carbon">
+  <color rgba="0.200 0.300 0.550 1.000"/>
+</material>
+
+<material name="pla">
+  <color rgba="0.950 0.550 0.150 1.000"/>
+</material>
+
+<material name="motor">
+  <color rgba="0.450 0.450 0.480 1.000"/>
+</material>
+
+</robot>

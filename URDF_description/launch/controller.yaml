@@ -1,0 +1,28 @@
+URDF:
+  # Publish all joint states -----------------------------------
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 50
+
+  # Position Controllers --------------------------------------
+  # gains = load inertia about the joint x (60 rad/s)^2, critically damped
+  J1_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: J1
+    pid: {p: 320.5, i: 320.5, d: 10.68, i_clamp: 1.0}
+  J2_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: J2
+    pid: {p: 116.5, i: 116.5, d: 3.883, i_clamp: 1.0}
+  J3_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: J3
+    pid: {p: 324.4, i: 324.4, d: 10.81, i_clamp: 1.0}
+  J4_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: J4
+    pid: {p: 42.13, i: 42.13, d: 1.404, i_clamp: 1.0}
+  J5_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: J5
+    pid: {p: 0.104, i: 0.104, d: 0.003467, i_clamp: 1.0}

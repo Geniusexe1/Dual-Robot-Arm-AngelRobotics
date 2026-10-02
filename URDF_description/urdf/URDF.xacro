@@ -1,0 +1,594 @@
+<?xml version="1.0" ?>
+<robot name="URDF" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+<xacro:include filename="$(find URDF_description)/urdf/materials.xacro" />
+<xacro:include filename="$(find URDF_description)/urdf/URDF.trans" />
+<xacro:include filename="$(find URDF_description)/urdf/URDF.gazebo" />
+
+<!-- Actuators (J1-J5): 85x40 mm, 510 g, 150 rpm, 27 Nm peak / 7.2 Nm continuous. -->
+<!-- J4 / J5 are the elbow / wrist joints (the old Same-J4 / Same-J5), driven by motors A4 / A5 through 4-bar linkages. -->
+<!-- J4_crank / J5_crank (motor side) and J4_bar / J5_bar follow the real CAD linkage, linearised at the rest pose where both bar eyes sit on their pins. -->
+<!-- The linkage is not a parallelogram (cranks 40.59 vs 50.00 mm), so away from rest the bar far eyes drift off their pins. -->
+<!-- A1 is grounded: J1 rotates base_link and everything above it. -->
+
+<link name="world"/>
+
+<joint name="world_fixed" type="fixed">
+  <origin xyz="-0.002943 0.045 -0.004" rpy="0 0 0"/>
+  <parent link="world"/>
+  <child link="A1_1"/>
+</joint>
+
+<link name="base_link">
+  <!-- aluminium 6061 2700 kg/m3 -->
+  <inertial>
+    <origin xyz="-0.006197 0 0.024233" rpy="0 0 0"/>
+    <mass value="0.197432"/>
+    <inertia ixx="3.0847e-04" iyy="8.0684e-04" izz="7.6436e-04" ixy="6.0950e-11" iyz="-1.3071e-12" ixz="7.6267e-05"/>
+  </inertial>
+  <visual>
+    <origin xyz="0.002943 -0.045 0.004" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://URDF_description/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="aluminium"/>
+  </visual>
+  <collision>
+    <origin xyz="0.002943 -0.045 0.004" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://URDF_description/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="carbontube_elbow_1">
+  <!-- carbon fibre 1600 kg/m3 -->
+  <inertial>
+    <origin xyz="0.086812 0 -0.050121" rpy="0 0 0"/>
+    <mass value="0.040277"/>
+    <inertia ixx="3.8204e-05" iyy="1.3645e-04" izz="1.0369e-04" ixy="7.2815e-10" iyz="-4.2018e-10" ixz="5.6712e-05"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.045386 -0.11935 -0.046495" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://URDF_description/meshes/carbontube_elbow_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="carbon"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.045386 -0.11935 -0.046495" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://URDF_description/meshes/carbontube_elbow_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="elbow_pipe_1">
+  <!-- carbon fibre 1600 kg/m3 -->
+  <inertial>
+    <origin xyz="0.138187 -0.218591 -0.217596" rpy="0 0 0"/>
+    <mass value="0.030026"/>
+    <inertia ixx="7.6656e-06" iyy="9.7393e-06" izz="9.0418e-06" ixy="8.6128e-12" iyz="-5.0765e-12" ixz="1.1919e-06"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.058724 -0.337941 -0.176607" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://URDF_description/meshes/elbow_pipe_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="carbon"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.058724 -0.337941 -0.176607" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://URDF_description/meshes/elbow_pipe_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="elbow_1">
+  <!-- PLA 60% infill (shell frac 0.32 -> 900 kg/m3) -->
+  <inertial>
+    <origin xyz="0.057763 -0.001798 -0.029836" rpy="0 0 0"/>
+    <mass value="0.151004"/>
+    <inertia ixx="2.5456e-04" iyy="3.7410e-04" izz="3.0535e-04" ixy="1.0991e-05" iyz="-1.9425e-06" ixz="9.9968e-05"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.214261 -0.1341 0.051005" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://URDF_description/meshes/elbow_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="pla"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.214261 -0.1341 0.051005" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://URDF_description/meshes/elbow_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="shoulder4bar_1">
+  <!-- PLA 60% infill (shell frac 0.61 -> 1049 kg/m3) -->
+  <inertial>
+    <origin xyz="0.093343 0.002 0.084624" rpy="0 0 0"/>
+    <mass value="0.009012"/>
+    <inertia ixx="1.7430e-05" iyy="5.2699e-05" izz="3.5293e-05" ixy="-1.6941e-21" iyz="-2.1176e-22" ixz="-2.4539e-05"/>
+  </inertial>
+  <visual>
+    <origin xyz="0.005289 -0.12295 -0.099192" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://URDF_description/meshes/shoulder4bar_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="pla"/>
+  </visual>
+  <collision>
+    <origin xyz="0.005289 -0.12295 -0.099192" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://URDF_description/meshes/shoulder4bar_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="carbontube_wrist_1">
+  <!-- carbon fibre 1600 kg/m3 -->
+  <inertial>
+    <origin xyz="0.086393 0 -0.049879" rpy="0 0 0"/>
+    <mass value="0.040277"/>
+    <inertia ixx="3.8207e-05" iyy="1.3643e-04" izz="1.0370e-04" ixy="2.0234e-12" iyz="-1.0478e-12" ixz="5.6717e-05"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.310823 -0.1201 0.106755" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://URDF_description/meshes/carbontube_wrist_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="carbon"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.310823 -0.1201 0.106755" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://URDF_description/meshes/carbontube_wrist_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="wrist_pipe_1">
+  <!-- carbon fibre 1600 kg/m3 -->
+  <inertial>
+    <origin xyz="-0.442749 -0.1201 -0.303286" rpy="0 0 0"/>
+    <mass value="0.030026"/>
+    <inertia ixx="7.6656e-06" iyy="9.7393e-06" izz="9.0418e-06" ixy="8.1672e-12" iyz="-4.7966e-12" ixz="1.1919e-06"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.905097 -0.2402 -0.109047" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://URDF_description/meshes/wrist_pipe_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="carbon"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.905097 -0.2402 -0.109047" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://URDF_description/meshes/wrist_pipe_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="wrist_v1_1">
+  <!-- PLA 60% infill (shell frac 0.37 -> 925 kg/m3) -->
+  <inertial>
+    <origin xyz="0.020574 -0.0145 -0.001435" rpy="0 0 0"/>
+    <mass value="0.031869"/>
+    <inertia ixx="1.8549e-05" iyy="1.5333e-05" izz="1.0950e-05" ixy="-4.2535e-12" iyz="1.2506e-12" ixz="1.2627e-06"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.479698 -0.13485 0.204256" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://URDF_description/meshes/wrist_v1_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="pla"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.479698 -0.13485 0.204256" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://URDF_description/meshes/wrist_v1_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="elbow4bar_1">
+  <!-- PLA 60% infill (shell frac 0.62 -> 1049 kg/m3) -->
+  <inertial>
+    <origin xyz="0.111286 0.002 -0.034642" rpy="0 0 0"/>
+    <mass value="0.008379"/>
+    <inertia ixx="7.6874e-06" iyy="4.2152e-05" izz="3.4487e-05" ixy="-2.7529e-21" iyz="1.0588e-21" ixz="1.5969e-05"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.289981 -0.11785 0.047848" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://URDF_description/meshes/elbow4bar_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="pla"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.289981 -0.11785 0.047848" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://URDF_description/meshes/elbow4bar_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="A1_1">
+  <!-- motor (510 g spec; CAD inertia scaled) -->
+  <inertial>
+    <origin xyz="0.000034 0.000118 -0.015956" rpy="0 0 0"/>
+    <mass value="0.510000"/>
+    <inertia ixx="2.7519e-04" iyy="2.7370e-04" izz="3.6741e-04" ixy="0.0000e+00" iyz="1.4875e-06" ixz="0.0000e+00"/>
+  </inertial>
+  <visual>
+    <origin xyz="0.002943 -0.045 0.004" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://URDF_description/meshes/A1_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="motor"/>
+  </visual>
+  <collision>
+    <origin xyz="0 0 -0.02" rpy="0 0 0"/>
+    <geometry>
+      <cylinder radius="0.0425" length="0.04"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="A2_1">
+  <!-- motor (510 g spec; CAD inertia scaled) -->
+  <inertial>
+    <origin xyz="0.023844 0.000116 0.000039" rpy="0 0 0"/>
+    <mass value="0.510000"/>
+    <inertia ixx="3.6741e-04" iyy="2.7370e-04" izz="2.7519e-04" ixy="1.4875e-06" iyz="-1.4875e-06" ixz="0.0000e+00"/>
+  </inertial>
+  <visual>
+    <origin xyz="0.071 -0.045 -0.0642" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://URDF_description/meshes/A2_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="motor"/>
+  </visual>
+  <collision>
+    <origin xyz="0.0198 0 0" rpy="0 1.570796 0"/>
+    <geometry>
+      <cylinder radius="0.0425" length="0.04"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="A3_A2_1">
+  <!-- aluminium 6061 2700 kg/m3 -->
+  <inertial>
+    <origin xyz="0.005004 0 0.000425" rpy="0 0 0"/>
+    <mass value="0.024900"/>
+    <inertia ixx="1.3363e-05" iyy="7.7042e-06" izz="6.8472e-06" ixy="6.7170e-15" iyz="8.1508e-15" ixz="3.2341e-08"/>
+  </inertial>
+  <visual>
+    <origin xyz="0.0329 -0.045 -0.0642" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://URDF_description/meshes/A3_A2_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="aluminium"/>
+  </visual>
+  <collision>
+    <origin xyz="0.0329 -0.045 -0.0642" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://URDF_description/meshes/A3_A2_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="A3_base_1">
+  <!-- aluminium 6061 2700 kg/m3 -->
+  <inertial>
+    <origin xyz="-0.005829 0.000707 0" rpy="0 0 0"/>
+    <mass value="0.022571"/>
+    <inertia ixx="8.9653e-06" iyy="4.8054e-06" izz="5.0351e-06" ixy="2.4778e-08" iyz="1.3838e-17" ixz="-4.2885e-14"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.065114 -0.045 -0.0642" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://URDF_description/meshes/A3_base_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="aluminium"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.065114 -0.045 -0.0642" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://URDF_description/meshes/A3_base_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="A3_1">
+  <!-- motor (510 g spec; CAD inertia scaled) -->
+  <inertial>
+    <origin xyz="0.034762 0.024044 -0.019976" rpy="0 0 0"/>
+    <mass value="0.510000"/>
+    <inertia ixx="2.7370e-04" iyy="3.6741e-04" izz="2.7519e-04" ixy="1.4875e-06" iyz="0.0000e+00" ixz="0.0000e+00"/>
+  </inertial>
+  <visual>
+    <origin xyz="0.019636 -0.028 -0.084035" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://URDF_description/meshes/A3_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="motor"/>
+  </visual>
+  <collision>
+    <origin xyz="0.034641 0.02 -0.02" rpy="1.570796 0 0"/>
+    <geometry>
+      <cylinder radius="0.0425" length="0.04"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="A3toA4_mount_1">
+  <!-- aluminium 6061 2700 kg/m3 -->
+  <inertial>
+    <origin xyz="-0.00016 -0.004402 0" rpy="0 0 0"/>
+    <mass value="0.066379"/>
+    <inertia ixx="3.3470e-05" iyy="6.4174e-05" izz="3.1412e-05" ixy="-1.2190e-08" iyz="-1.1363e-12" ixz="1.8269e-11"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.015005 -0.068 -0.064035" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://URDF_description/meshes/A3toA4_mount_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="aluminium"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.015005 -0.068 -0.064035" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://URDF_description/meshes/A3toA4_mount_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="A4_1">
+  <!-- motor (510 g spec; CAD inertia scaled) -->
+  <inertial>
+    <origin xyz="0.000092 0.024044 0.000081" rpy="0 0 0"/>
+    <mass value="0.510000"/>
+    <inertia ixx="2.7370e-04" iyy="3.6741e-04" izz="2.7519e-04" ixy="1.4875e-06" iyz="1.4875e-06" ixz="-1.4875e-06"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.015005 -0.0677 -0.064035" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://URDF_description/meshes/A4_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="motor"/>
+  </visual>
+  <collision>
+    <origin xyz="0 0.02 0" rpy="1.570796 0 0"/>
+    <geometry>
+      <cylinder radius="0.0425" length="0.04"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="bicep_1">
+  <!-- PLA 60% infill (shell frac 0.50 -> 994 kg/m3) -->
+  <inertial>
+    <origin xyz="0.003088 0.01765 -0.048529" rpy="0 0 0"/>
+    <mass value="0.048146"/>
+    <inertia ixx="4.2299e-05" iyy="8.6957e-05" izz="6.3280e-05" ixy="5.6828e-12" iyz="8.3176e-12" ixz="1.6893e-05"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.035005 -0.1017 -0.098676" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://URDF_description/meshes/bicep_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="pla"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.035005 -0.1017 -0.098676" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://URDF_description/meshes/bicep_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="teardrop1_1">
+  <!-- PLA 60% infill (shell frac 0.22 -> 854 kg/m3) -->
+  <inertial>
+    <origin xyz="-0.000954 0.008235 0.001653" rpy="0 0 0"/>
+    <mass value="0.022046"/>
+    <inertia ixx="3.9584e-06" iyy="6.3925e-06" izz="3.3703e-06" ixy="1.0555e-07" iyz="-1.8284e-07" ixz="5.0914e-07"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.015005 -0.1072 -0.064035" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://URDF_description/meshes/teardrop1_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="pla"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.015005 -0.1072 -0.064035" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://URDF_description/meshes/teardrop1_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="A5_1">
+  <!-- motor (510 g spec; CAD inertia scaled) -->
+  <inertial>
+    <origin xyz="-0.000092 -0.024044 0.000081" rpy="0 0 0"/>
+    <mass value="0.510000"/>
+    <inertia ixx="2.7370e-04" iyy="3.6741e-04" izz="2.7519e-04" ixy="1.4875e-06" iyz="-1.4875e-06" ixz="1.4875e-06"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.269687 -0.1731 0.083005" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://URDF_description/meshes/A5_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="motor"/>
+  </visual>
+  <collision>
+    <origin xyz="0 -0.02 0" rpy="1.570796 0 0"/>
+    <geometry>
+      <cylinder radius="0.0425" length="0.04"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="teardrop2_1">
+  <!-- PLA 60% infill (shell frac 0.22 -> 854 kg/m3) -->
+  <inertial>
+    <origin xyz="0.000954 -0.008235 0.001653" rpy="0 0 0"/>
+    <mass value="0.022046"/>
+    <inertia ixx="3.9584e-06" iyy="6.3925e-06" izz="3.3703e-06" ixy="1.0555e-07" iyz="1.8284e-07" ixz="-5.0914e-07"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.269687 -0.1336 0.083005" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://URDF_description/meshes/teardrop2_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="pla"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.269687 -0.1336 0.083005" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://URDF_description/meshes/teardrop2_1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<joint name="Rigid_27" type="fixed">
+  <origin xyz="0.010381 0.01765 -0.052181" rpy="0 0 0"/>
+  <parent link="bicep_1"/>
+  <child link="carbontube_elbow_1"/>
+</joint>
+
+<joint name="Rigid_28" type="fixed">
+  <origin xyz="0.013338 0.218591 0.130112" rpy="0 0 0"/>
+  <parent link="carbontube_elbow_1"/>
+  <child link="elbow_pipe_1"/>
+</joint>
+
+<joint name="J4" type="revolute">
+  <origin xyz="0.155537 -0.203841 -0.227612" rpy="0 0 0"/>
+  <parent link="elbow_pipe_1"/>
+  <child link="elbow_1"/>
+  <axis xyz="0 -1 0"/>
+  <limit lower="-1.1519" upper="0.5236" effort="36.76" velocity="11.538"/>
+</joint>
+
+<joint name="J4_bar" type="continuous">
+  <origin xyz="-0.020294 0.01575 0.035157" rpy="0 0.530916 0"/>
+  <parent link="teardrop1_1"/>
+  <child link="shoulder4bar_1"/>
+  <axis xyz="0 -1 0"/>
+  <mimic joint="J4" multiplier="-1.255004" offset="0.000000"/>
+</joint>
+
+<joint name="Rigid_33" type="fixed">
+  <origin xyz="0.096562 -0.014 -0.05575" rpy="0 0 0"/>
+  <parent link="elbow_1"/>
+  <child link="carbontube_wrist_1"/>
+</joint>
+
+<joint name="Rigid_35" type="fixed">
+  <origin xyz="0.594274 0.1201 0.215802" rpy="0 0 0"/>
+  <parent link="carbontube_wrist_1"/>
+  <child link="wrist_pipe_1"/>
+</joint>
+
+<joint name="J5" type="revolute">
+  <origin xyz="-0.425399 -0.10535 -0.313303" rpy="0 0 0"/>
+  <parent link="wrist_pipe_1"/>
+  <child link="wrist_v1_1"/>
+  <axis xyz="0 1 0"/>
+  <limit lower="-0.9599" upper="0.5236" effort="35.27" velocity="12.026"/>
+</joint>
+
+<joint name="J5_bar" type="continuous">
+  <origin xyz="0.020294 -0.01575 0.035157" rpy="0 -0.255279 0"/>
+  <parent link="teardrop2_1"/>
+  <child link="elbow4bar_1"/>
+  <axis xyz="0 1 0"/>
+  <mimic joint="J5" multiplier="-1.372780" offset="0.000000"/>
+</joint>
+
+<joint name="J1" type="revolute">
+  <origin xyz="0 0 0" rpy="0 0 0"/>
+  <parent link="A1_1"/>
+  <child link="base_link"/>
+  <axis xyz="0 0 1"/>
+  <limit lower="-3.1416" upper="3.1416" effort="27.00" velocity="15.708"/>
+</joint>
+
+<joint name="Rigid_40" type="fixed">
+  <origin xyz="-0.068057 0 0.0682" rpy="0 0 0"/>
+  <parent link="base_link"/>
+  <child link="A2_1"/>
+</joint>
+
+<joint name="J2" type="revolute">
+  <origin xyz="0.0381 0 0" rpy="0 0 0"/>
+  <parent link="A2_1"/>
+  <child link="A3_A2_1"/>
+  <axis xyz="-1 0 0"/>
+  <limit lower="-3.3161" upper="0.1745" effort="27.00" velocity="15.708"/>
+</joint>
+
+<joint name="Rigid_42" type="fixed">
+  <origin xyz="0.068057 0 0.0682" rpy="0 0 0"/>
+  <parent link="base_link"/>
+  <child link="A3_base_1"/>
+</joint>
+
+<joint name="Rigid_43" type="fixed">
+  <origin xyz="0.013264 -0.017 0.019835" rpy="0 0 0"/>
+  <parent link="A3_A2_1"/>
+  <child link="A3_1"/>
+</joint>
+
+<joint name="J3" type="revolute">
+  <origin xyz="0.034641 0.04 -0.02" rpy="0 0 0"/>
+  <parent link="A3_1"/>
+  <child link="A3toA4_mount_1"/>
+  <axis xyz="0 -1 0"/>
+  <limit lower="-3.1416" upper="3.1416" effort="27.00" velocity="15.708"/>
+</joint>
+
+<joint name="Rigid_45" type="fixed">
+  <origin xyz="0 -0.0003 0" rpy="0 0 0"/>
+  <parent link="A3toA4_mount_1"/>
+  <child link="A4_1"/>
+</joint>
+
+<joint name="Rigid_46" type="fixed">
+  <origin xyz="0.02 0.034 0.034641" rpy="0 0 0"/>
+  <parent link="A4_1"/>
+  <child link="bicep_1"/>
+</joint>
+
+<joint name="J4_crank" type="continuous">
+  <origin xyz="0 0.0395 0" rpy="0 0 0"/>
+  <parent link="A4_1"/>
+  <child link="teardrop1_1"/>
+  <axis xyz="0 -1 0"/>
+  <mimic joint="J4" multiplier="1.361386" offset="-0.545924"/>
+</joint>
+
+<joint name="Rigid_48" type="fixed">
+  <origin xyz="0.055426 0.039 -0.032" rpy="0 0 0"/>
+  <parent link="elbow_1"/>
+  <child link="A5_1"/>
+</joint>
+
+<joint name="J5_crank" type="continuous">
+  <origin xyz="0 -0.0395 0" rpy="0 0 0"/>
+  <parent link="A5_1"/>
+  <child link="teardrop2_1"/>
+  <axis xyz="0 1 0"/>
+  <mimic joint="J5" multiplier="1.306152" offset="0.294257"/>
+</joint>
+
+</robot>
